@@ -35,7 +35,11 @@ const login = async (req, res) => {
       })
     }
 
-    const result = await authService.login(email, password)
+    // Obter IP e User-Agent da requisição
+    const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress
+    const userAgent = req.headers['user-agent']
+
+    const result = await authService.login(email, password, ipAddress, userAgent)
 
     res.status(200).json(result)
   } catch (error) {
@@ -59,8 +63,24 @@ const getMe = async (req, res) => {
   }
 }
 
+const getLoginHistory = async (req, res) => {
+  try {
+    const limit = req.query.limit || 10
+
+    const result = await authService.getLoginHistory(req.user.id, limit)
+
+    res.status(200).json(result)
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    })
+  }
+}
+
 module.exports = {
   register,
   login,
-  getMe
+  getMe,
+  getLoginHistory
 }
