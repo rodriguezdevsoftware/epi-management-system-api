@@ -97,6 +97,63 @@
 
 ---
 
+### 🏢 Companies
+
+#### 1. **Get All Companies (Listar Empresas)** 🔒
+- **Método:** `GET`
+- **URL:** `{{base_url}}/companies`
+- **Headers:**
+  - `Authorization: Bearer {{auth_token}}`
+- **Resposta Sucesso (200):**
+```json
+{
+  "success": true,
+  "companies": [
+    {
+      "_id": "65f0d1c2a8e4bc0012dcd001",
+      "internalCode": "EMP-001",
+      "tradeName": "Empresa Exemplo",
+      "address": "Rua A, 100",
+      "neighborhood": "Centro",
+      "city": "Sao Paulo",
+      "zipCode": "01001-000",
+      "state": "SP",
+      "phone": "(11) 99999-9999",
+      "email": "contato@empresa.com",
+      "cnpj": "12.345.678/0001-90"
+    }
+  ]
+}
+```
+
+#### 2. **Get Company By ID (Buscar Empresa por ID)** 🔒
+- **Método:** `GET`
+- **URL:** `{{base_url}}/companies/{{company_id}}`
+- **Headers:**
+  - `Authorization: Bearer {{auth_token}}`
+- **Variável necessária:** `company_id`
+- **Resposta Sucesso (200):**
+```json
+{
+  "success": true,
+  "company": {
+    "_id": "65f0d1c2a8e4bc0012dcd001",
+    "internalCode": "EMP-001",
+    "tradeName": "Empresa Exemplo",
+    "address": "Rua A, 100",
+    "neighborhood": "Centro",
+    "city": "Sao Paulo",
+    "zipCode": "01001-000",
+    "state": "SP",
+    "phone": "(11) 99999-9999",
+    "email": "contato@empresa.com",
+    "cnpj": "12.345.678/0001-90"
+  }
+}
+```
+
+---
+
 ## Variáveis de Environment
 
 A coleção usa as seguintes variáveis:
@@ -108,6 +165,7 @@ A coleção usa as seguintes variáveis:
 | `user_id` | ID do usuário autenticado | - |
 | `user_name` | Nome do usuário autenticado | - |
 | `user_email` | Email do usuário autenticado | - |
+| `company_id` | ID da empresa para busca por ID | - |
 
 ---
 
@@ -131,6 +189,15 @@ A coleção usa as seguintes variáveis:
 1. Altere manualmente o `auth_token` no environment para um valor inválido
 2. Execute **"Get Me"** novamente
 3. Verifique o erro 401 (Unauthorized)
+
+### 5️⃣ Teste de Empresas: Listagem
+1. Execute a requisição **"Get All Companies (Protected)"**
+2. Copie um `_id` retornado
+3. Salve esse valor na variável `company_id` do environment
+
+### 6️⃣ Teste de Empresas: Busca por ID
+1. Execute **"Get Company By ID (Protected)"**
+2. Verifique se retornou apenas a empresa do ID informado
 
 ---
 
