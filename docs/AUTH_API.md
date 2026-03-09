@@ -20,6 +20,8 @@
 {
   "success": true,
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "tokenExpiresIn": "2h",
+  "tokenExpiresAt": "2026-03-09T14:00:00.000Z",
   "user": {
     "id": "507f1f77bcf86cd799439011",
     "name": "Seu Nome",
@@ -55,6 +57,8 @@
 {
   "success": true,
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "tokenExpiresIn": "2h",
+  "tokenExpiresAt": "2026-03-09T14:00:00.000Z",
   "user": {
     "id": "507f1f77bcf86cd799439011",
     "name": "Rodriguez Dev",
@@ -91,6 +95,59 @@ Authorization: Bearer seu_token_jwt_aqui
     "name": "Rodriguez Dev",
     "email": "rodriguez.dev.software@gmail.com"
   }
+}
+```
+
+**Resposta de erro (401):**
+```json
+{
+  "success": false,
+  "error": "Token não fornecido. Por favor, faça login"
+}
+```
+
+---
+
+### 4. Obter Histórico de Login
+
+**Endpoint:** `GET /api/auth/login-history`
+
+**Headers:**
+```
+Authorization: Bearer seu_token_jwt_aqui
+```
+
+**Query Parameters (opcional):**
+- `limit`: Número máximo de registros a retornar (padrão: 10)
+
+**Exemplos de URL:**
+```
+GET /api/auth/login-history                    (retorna últimos 10 logins)
+GET /api/auth/login-history?limit=20           (retorna últimos 20 logins)
+```
+
+**Resposta de sucesso (200):**
+```json
+{
+  "success": true,
+  "history": [
+    {
+      "_id": "507f1f77bcf86cd799439021",
+      "email": "rodriguez.dev.software@gmail.com",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "ipAddress": "192.168.1.100",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+      "loginAt": "2026-03-08T10:30:00.000Z"
+    },
+    {
+      "_id": "507f1f77bcf86cd799439020",
+      "email": "rodriguez.dev.software@gmail.com",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "ipAddress": "192.168.1.101",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+      "loginAt": "2026-03-07T15:45:00.000Z"
+    }
+  ]
 }
 ```
 
@@ -160,7 +217,7 @@ npm run seed
 PORT=3000
 MONGO_URI=mongodb://127.0.0.1:27017/epi-management-system
 JWT_SECRET=seu_jwt_secret_super_seguro_aqui_123456!@#$%^&*
-JWT_EXPIRE=7d
+JWT_EXPIRE=2h
 ```
 
 ---
@@ -197,4 +254,4 @@ src/
 4. Cliente armazena o token
 5. Cliente envia o token no header `Authorization: Bearer <token>` em requisições protegidas
 6. Middleware verifica o token e permite acesso apenas se válido
-7. Token expira em 7 dias (configurável em `.env`)
+7. Token expira em 2 horas por padrão (configurável em `JWT_EXPIRE`)
