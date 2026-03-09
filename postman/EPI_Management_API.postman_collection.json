@@ -274,12 +274,128 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Companies",
+      "item": [
+        {
+          "name": "Get All Companies (Protected)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auth_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/companies",
+              "host": ["{{base_url}}"],
+              "path": ["companies"]
+            },
+            "description": "Endpoint protegido para listar todas as empresas cadastradas."
+          },
+          "response": [
+            {
+              "name": "Get All Companies Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/companies",
+                  "host": ["{{base_url}}"],
+                  "path": ["companies"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"companies\": [\n    {\n      \"_id\": \"65f0d1c2a8e4bc0012dcd001\",\n      \"internalCode\": \"EMP-001\",\n      \"tradeName\": \"Empresa Exemplo\",\n      \"address\": \"Rua A, 100\",\n      \"neighborhood\": \"Centro\",\n      \"city\": \"Sao Paulo\",\n      \"zipCode\": \"01001-000\",\n      \"state\": \"SP\",\n      \"phone\": \"(11) 99999-9999\",\n      \"email\": \"contato@empresa.com\",\n      \"cnpj\": \"12.345.678/0001-90\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Company By ID (Protected)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auth_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/companies/{{company_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["companies", "{{company_id}}"]
+            },
+            "description": "Endpoint protegido para buscar uma empresa pelo ID."
+          },
+          "response": [
+            {
+              "name": "Get Company By ID Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/companies/{{company_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["companies", "{{company_id}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"company\": {\n    \"_id\": \"65f0d1c2a8e4bc0012dcd001\",\n    \"internalCode\": \"EMP-001\",\n    \"tradeName\": \"Empresa Exemplo\",\n    \"address\": \"Rua A, 100\",\n    \"neighborhood\": \"Centro\",\n    \"city\": \"Sao Paulo\",\n    \"zipCode\": \"01001-000\",\n    \"state\": \"SP\",\n    \"phone\": \"(11) 99999-9999\",\n    \"email\": \"contato@empresa.com\",\n    \"cnpj\": \"12.345.678/0001-90\"\n  }\n}"
+            }
+          ]
+        }
+      ]
     }
   ],
   "variable": [
     {
       "key": "base_url",
       "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "company_id",
+      "value": "",
       "type": "string"
     }
   ]

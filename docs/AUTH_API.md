@@ -1,6 +1,8 @@
-# Documentação da API de Autenticação
+# Documentação da API (Auth e Empresas)
 
 ## Endpoints disponíveis
+
+### Auth
 
 ### 1. Registro de Novo Usuário
 
@@ -161,6 +163,98 @@ GET /api/auth/login-history?limit=20           (retorna últimos 20 logins)
 
 ---
 
+### Empresas
+
+### 5. Listar Todas as Empresas
+
+**Endpoint:** `GET /api/companies`
+
+**Headers:**
+```
+Authorization: Bearer seu_token_jwt_aqui
+```
+
+**Resposta de sucesso (200):**
+```json
+{
+  "success": true,
+  "companies": [
+    {
+      "_id": "65f0d1c2a8e4bc0012dcd001",
+      "internalCode": "EMP-001",
+      "tradeName": "Empresa Exemplo",
+      "address": "Rua A, 100",
+      "neighborhood": "Centro",
+      "city": "Sao Paulo",
+      "zipCode": "01001-000",
+      "state": "SP",
+      "phone": "(11) 99999-9999",
+      "email": "contato@empresa.com",
+      "cnpj": "12.345.678/0001-90",
+      "createdAt": "2026-03-09T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+**Resposta de erro (401):**
+```json
+{
+  "success": false,
+  "error": "Token não fornecido. Por favor, faça login"
+}
+```
+
+---
+
+### 6. Buscar Empresa por ID
+
+**Endpoint:** `GET /api/companies/:id`
+
+**Headers:**
+```
+Authorization: Bearer seu_token_jwt_aqui
+```
+
+**Resposta de sucesso (200):**
+```json
+{
+  "success": true,
+  "company": {
+    "_id": "65f0d1c2a8e4bc0012dcd001",
+    "internalCode": "EMP-001",
+    "tradeName": "Empresa Exemplo",
+    "address": "Rua A, 100",
+    "neighborhood": "Centro",
+    "city": "Sao Paulo",
+    "zipCode": "01001-000",
+    "state": "SP",
+    "phone": "(11) 99999-9999",
+    "email": "contato@empresa.com",
+    "cnpj": "12.345.678/0001-90",
+    "createdAt": "2026-03-09T10:00:00.000Z"
+  }
+}
+```
+
+**Resposta de erro (404):**
+```json
+{
+  "success": false,
+  "error": "Empresa não encontrada"
+}
+```
+
+**Resposta de erro (400):**
+```json
+{
+  "success": false,
+  "error": "ID da empresa inválido"
+}
+```
+
+---
+
 ## Como usar
 
 ### 1. Fazer login com usuário default
@@ -185,6 +279,20 @@ curl -X GET http://localhost:3000/api/auth/me \
 
 ```bash
 curl -X POST http://localhost:3000/api/auth/register \
+
+### 4. Listar empresas
+
+```bash
+curl -X GET http://localhost:3000/api/companies \
+  -H "Authorization: Bearer seu_token_aqui"
+```
+
+### 5. Buscar empresa por ID
+
+```bash
+curl -X GET http://localhost:3000/api/companies/65f0d1c2a8e4bc0012dcd001 \
+  -H "Authorization: Bearer seu_token_aqui"
+```
   -H "Content-Type: application/json" \
   -d '{
     "name": "Novo Usuário",
@@ -227,15 +335,20 @@ JWT_EXPIRE=2h
 ```
 src/
 ├── models/
-│   └── user.js                 # Modelo de usuário com Mongoose
+│   ├── user.js                 # Modelo de usuário com Mongoose
+│   ├── loginHistory.js         # Modelo de histórico de login
+│   └── company.js              # Modelo de empresa
 ├── services/
-│   └── authService.js          # Lógica de autenticação
+│   ├── authService.js          # Lógica de autenticação
+│   └── companyService.js       # Lógica de empresas
 ├── controllers/
-│   └── authController.js       # Controllers de autenticação
+│   ├── authController.js       # Controllers de autenticação
+│   └── companyController.js    # Controllers de empresas
 ├── middlewares/
 │   └── authMiddleware.js       # Middleware de verificação JWT
 ├── routes/
-│   └── authRoutes.js           # Rotas de autenticação
+│   ├── authRoutes.js           # Rotas de autenticação
+│   └── companyRoutes.js        # Rotas de empresas
 ├── scripts/
 │   └── seedDatabase.js         # Script para criar usuário default
 ├── config/
@@ -255,3 +368,12 @@ src/
 5. Cliente envia o token no header `Authorization: Bearer <token>` em requisições protegidas
 6. Middleware verifica o token e permite acesso apenas se válido
 7. Token expira em 2 horas por padrão (configurável em `JWT_EXPIRE`)
+
+---
+
+## Coleção Postman
+
+A documentação dos requests no Postman está em:
+
+- `postman/EPI_Management_API.postman_collection.json`
+- `postman/EPI_Management.postman_environment.json`
