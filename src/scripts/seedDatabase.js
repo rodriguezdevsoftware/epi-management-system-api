@@ -1,6 +1,8 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
 const User = require('../models/user')
+const Company = require('../models/company')
+const Permission = require('../models/permission')
 const connectDatabase = require('../config/database')
 
 const seedDatabase = async () => {
@@ -16,20 +18,92 @@ const seedDatabase = async () => {
     }
 
     // Verificar se o usuário já existe
-    const userExists = await User.findOne({ email: defaultUser.email })
+    let user = await User.findOne({ email: defaultUser.email })
 
-    if (userExists) {
+    if (!user) {
+      // Criar usuário default
+      user = await User.create(defaultUser)
+      console.log('✓ Usuário default criado com sucesso!')
+      console.log(`  Email: ${defaultUser.email}`)
+      console.log(`  Senha: ${defaultUser.password}`)
+    } else {
       console.log('✓ Usuário default já existe')
-      process.exit(0)
     }
 
-    // Criar usuário default
-    await User.create(defaultUser)
+    // Dados das empresas padrão
+    const defaultCompanies = [
+      {
+        internalCode: 'EMP-001',
+        tradeName: 'Empresa Exemplo Ltda',
+        address: 'Rua A, 100',
+        neighborhood: 'Centro',
+        city: 'São Paulo',
+        zipCode: '01001-000',
+        state: 'SP',
+        phone: '(11) 99999-9999',
+        email: 'contato@empresa1.com',
+        cnpj: '12.345.678/0001-90'
+      },
+      {
+        internalCode: 'EMP-002',
+        tradeName: 'Distribuidora Santos',
+        address: 'Av. Brasil, 500',
+        neighborhood: 'Vila Soco',
+        city: 'Santos',
+        zipCode: '11010-160',
+        state: 'SP',
+        phone: '(13) 98888-8888',
+        email: 'contato@santos.com',
+        cnpj: '98.765.432/0001-12'
+      },
+      {
+        internalCode: 'EMP-003',
+        tradeName: 'Comércio Rio de Janeiro',
+        address: 'Rua das Flores, 250',
+        neighborhood: 'Botafogo',
+        city: 'Rio de Janeiro',
+        zipCode: '22250-145',
+        state: 'RJ',
+        phone: '(21) 97777-7777',
+        email: 'contato@rj.com',
+        cnpj: '55.555.555/0001-55'
+      }
+    ]
 
-    console.log('✓ Usuário default criado com sucesso!')
-    console.log(`  Email: ${defaultUser.email}`)
-    console.log(`  Senha: ${defaultUser.password}`)
+    // Criar empresas
+    const companies = []
+    for (const companyData of defaultCompanies) {
+      const existingCompany = await Company.findOne({ cnpj: companyData.cnpj })
+      if (!existingCompany) {
+        const company = await Company.create(companyData)
+        companies.push(company)
+        console.log(`✓ Empresa criada: ${companyData.tradeName}`)
+      } else {
+        companies.push(existingCompany)
+        console.log(`✓ Empresa já existe: ${companyData.tradeName}`)
+      }
+    }
 
+    // Criar permissões do usuário para as empresas
+    for (const company of companies) {
+      const permissionExists = await Permission.findOne({
+        userId: user._id,
+        companyId: company._id
+      })
+
+      if (!permissionExists) {
+        await Permission.create({
+          userId: user._id,
+          companyId: company._id,
+          role: 'admin'
+        })
+        console.log(`✓ Permissão criada: ${user.name} -> ${company.tradeName}`)
+      } else {
+        console.log(`✓ Permissão já existe: ${user.name} -> ${company.tradeName}`)
+      }
+    }
+
+    console.log('\n✓ Seed do banco de dados concluído com sucesso!')
     process.exit(0)
   } catch (error) {
     console.error('✗ Erro ao fazer seed do banco de dados:', error.message)

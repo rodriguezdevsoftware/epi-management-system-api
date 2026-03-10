@@ -174,6 +174,8 @@ GET /api/auth/login-history?limit=20           (retorna últimos 20 logins)
 Authorization: Bearer seu_token_jwt_aqui
 ```
 
+**Descrição:** Retorna apenas as empresas que o usuário autenticado tem permissão de acessar. As empresas são ordenadas alfabeticamente por nome fantasia.
+
 **Resposta de sucesso (200):**
 ```json
 {
@@ -191,7 +193,9 @@ Authorization: Bearer seu_token_jwt_aqui
       "phone": "(11) 99999-9999",
       "email": "contato@empresa.com",
       "cnpj": "12.345.678/0001-90",
-      "createdAt": "2026-03-09T10:00:00.000Z"
+      "createdAt": "2026-03-09T10:00:00.000Z",
+      "userRole": "admin",
+      "permissionId": "65f0d1c5a8e4bc0012dcd002"
     }
   ]
 }
@@ -216,6 +220,8 @@ Authorization: Bearer seu_token_jwt_aqui
 Authorization: Bearer seu_token_jwt_aqui
 ```
 
+**Descrição:** Retorna os dados de uma empresa específica apenas se o usuário autenticado tem permissão de acessá-la.
+
 **Resposta de sucesso (200):**
 ```json
 {
@@ -232,8 +238,18 @@ Authorization: Bearer seu_token_jwt_aqui
     "phone": "(11) 99999-9999",
     "email": "contato@empresa.com",
     "cnpj": "12.345.678/0001-90",
-    "createdAt": "2026-03-09T10:00:00.000Z"
+    "createdAt": "2026-03-09T10:00:00.000Z",
+    "userRole": "admin",
+    "permissionId": "65f0d1c5a8e4bc0012dcd002"
   }
+}
+```
+
+**Resposta de erro (403) - Sem permissão:**
+```json
+{
+  "success": false,
+  "error": "Você não tem permissão para acessar esta empresa"
 }
 ```
 
@@ -279,26 +295,26 @@ curl -X GET http://localhost:3000/api/auth/me \
 
 ```bash
 curl -X POST http://localhost:3000/api/auth/register \
-
-### 4. Listar empresas
-
-```bash
-curl -X GET http://localhost:3000/api/companies \
-  -H "Authorization: Bearer seu_token_aqui"
-```
-
-### 5. Buscar empresa por ID
-
-```bash
-curl -X GET http://localhost:3000/api/companies/65f0d1c2a8e4bc0012dcd001 \
-  -H "Authorization: Bearer seu_token_aqui"
-```
   -H "Content-Type: application/json" \
   -d '{
     "name": "Novo Usuário",
     "email": "novo@exemplo.com",
     "password": "senha123"
   }'
+```
+
+### 4. Listar empresas do usuário
+
+```bash
+curl -X GET http://localhost:3000/api/companies \
+  -H "Authorization: Bearer seu_token_aqui"
+```
+
+### 5. Buscar empresa por ID (com permissão)
+
+```bash
+curl -X GET http://localhost:3000/api/companies/65f0d1c2a8e4bc0012dcd001 \
+  -H "Authorization: Bearer seu_token_aqui"
 ```
 
 ---
@@ -337,10 +353,11 @@ src/
 ├── models/
 │   ├── user.js                 # Modelo de usuário com Mongoose
 │   ├── loginHistory.js         # Modelo de histórico de login
-│   └── company.js              # Modelo de empresa
+│   ├── company.js              # Modelo de empresa
+│   └── permission.js           # Modelo de permissão (usuário-empresa)
 ├── services/
 │   ├── authService.js          # Lógica de autenticação
-│   └── companyService.js       # Lógica de empresas
+│   └── companyService.js       # Lógica de empresas com controle de permissões
 ├── controllers/
 │   ├── authController.js       # Controllers de autenticação
 │   └── companyController.js    # Controllers de empresas
@@ -350,12 +367,75 @@ src/
 │   ├── authRoutes.js           # Rotas de autenticação
 │   └── companyRoutes.js        # Rotas de empresas
 ├── scripts/
-│   └── seedDatabase.js         # Script para criar usuário default
+│   └── seedDatabase.js         # Script para criar usuário, empresas e permissões
 ├── config/
 │   └── database.js             # Configuração do MongoDB
 ├── app.js                      # Configuração do Express
 └── server.js                   # Inicialização do servidor
 ```
+
+---
+
+## Sistema de Permissões de Empresas
+
+### Conceito
+
+Cada usuário pode ter acesso a múltiplas empresas através de um sistema de permissões. Quando um usuário faz login, ele só consegue:
+
+1. **Listar empresas:** Retorna apenas as empresas para as quais ele tem permissão
+2. **Buscar empresa por ID:** Retorna a empresa apenas se ele tem permissão; caso contrário, recebe erro 403
+
+### Roles de Permissão
+
+As permissões podem ter os seguintes níveis de acesso:
+
+| Role | Descrição |
+|------|-----------|
+| `admin` | Acesso total à empresa (futuros: criar, editar, deletar) |
+| `editor` | Acesso com permissão de edição (futuros: criar, editar) |
+| `viewer` | Acesso apenas para visualização (leitura) |
+
+### Como Funciona
+
+1. **Usuário faz login** → Recebe token JWT
+2. **Usuario requisita `GET /api/companies`** → Sistema busca todas as permissões do usuário e retorna as empresas associadas
+3. **Usuário requisita `GET /api/companies/:id`** → Sistema verifica se o usuário tem permissão para essa empresa:
+   - Se tem permissão: Retorna a empresa (200)
+   - Se não tem permissão: Retorna erro 403 (Forbidden)
+
+### Estrutura da Resposta
+
+Em ambos os endpoints, junto aos dados da empresa, são retornados:
+
+- `userRole`: O nível de acesso do usuário para aquela empresa
+- `permissionId`: O ID da permissão no banco de dados
+
+Exemplo:
+```json
+{
+  "_id": "65f0d1c2a8e4bc0012dcd001",
+  "tradeName": "Empresa Exemplo",
+  ...
+  "userRole": "admin",
+  "permissionId": "65f0d1c5a8e4bc0012dcd002"
+}
+```
+
+### Dados Iniciais (Seed)
+
+Ao executar `npm run seed`, o script cria automaticamente:
+
+1. **1 usuário default**
+   - Email: `rodriguez.dev.software@gmail.com`
+   - Senha: `123456`
+
+2. **3 empresas padrão**
+   - Empresa Exemplo Ltda (SP)
+   - Distribuidora Santos (SP)
+   - Comércio Rio de Janeiro (RJ)
+
+3. **Permissões**
+   - O usuário default recebe acesso `admin` a todas as 3 empresas
 
 ---
 
