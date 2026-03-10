@@ -385,6 +385,173 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Positions",
+      "item": [
+        {
+          "name": "Get All Positions (Protected)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auth_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/positions",
+              "host": ["{{base_url}}"],
+              "path": ["positions"]
+            },
+            "description": "Lista todos os cargos das empresas permitidas para o usuário autenticado."
+          }
+        },
+        {
+          "name": "Get All Positions By Company (Protected)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auth_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/positions?companyId={{company_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["positions"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "{{company_id}}"
+                }
+              ]
+            },
+            "description": "Lista cargos por empresa, validando se o usuário possui permissão."
+          }
+        },
+        {
+          "name": "Get Position By ID (Protected)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auth_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/positions/{{position_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["positions", "{{position_id}}"]
+            },
+            "description": "Retorna um cargo específico por ID."
+          }
+        },
+        {
+          "name": "Create Position (Protected)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auth_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"CARG-003\",\n  \"description\": \"Supervisor Operacional\",\n  \"companyId\": \"{{company_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/positions",
+              "host": ["{{base_url}}"],
+              "path": ["positions"]
+            },
+            "description": "Cria um cargo para a empresa informada."
+          }
+        },
+        {
+          "name": "Update Position (Protected)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auth_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": null,\n  \"description\": \"Supervisor de Seguranca\",\n  \"companyId\": \"{{company_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/positions/{{position_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["positions", "{{position_id}}"]
+            },
+            "description": "Atualiza dados de um cargo existente."
+          }
+        },
+        {
+          "name": "Delete Position (Protected)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auth_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/positions/{{position_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["positions", "{{position_id}}"]
+            },
+            "description": "Exclui um cargo por ID."
+          }
+        }
+      ]
     }
   ],
   "variable": [
@@ -395,6 +562,11 @@
     },
     {
       "key": "company_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "position_id",
       "value": "",
       "type": "string"
     }
