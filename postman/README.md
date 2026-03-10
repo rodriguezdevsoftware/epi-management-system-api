@@ -126,6 +126,56 @@
 }
 ```
 
+---
+
+### 🧰 Positions (Cargos)
+
+#### 1. **Get All Positions (Listar Cargos Permitidos)** 🔒
+- **Método:** `GET`
+- **URL:** `{{base_url}}/positions`
+- **Headers:**
+  - `Authorization: Bearer {{auth_token}}`
+
+#### 2. **Get All Positions By Company (Filtrar por Empresa)** 🔒
+- **Método:** `GET`
+- **URL:** `{{base_url}}/positions?companyId={{company_id}}`
+- **Headers:**
+  - `Authorization: Bearer {{auth_token}}`
+
+#### 3. **Get Position By ID** 🔒
+- **Método:** `GET`
+- **URL:** `{{base_url}}/positions/{{position_id}}`
+- **Headers:**
+  - `Authorization: Bearer {{auth_token}}`
+
+#### 4. **Create Position** 🔒
+- **Método:** `POST`
+- **URL:** `{{base_url}}/positions`
+- **Headers:**
+  - `Authorization: Bearer {{auth_token}}`
+  - `Content-Type: application/json`
+- **Body:**
+```json
+{
+  "code": "CARG-003",
+  "description": "Supervisor Operacional",
+  "companyId": "{{company_id}}"
+}
+```
+
+#### 5. **Update Position** 🔒
+- **Método:** `PUT`
+- **URL:** `{{base_url}}/positions/{{position_id}}`
+- **Headers:**
+  - `Authorization: Bearer {{auth_token}}`
+  - `Content-Type: application/json`
+
+#### 6. **Delete Position** 🔒
+- **Método:** `DELETE`
+- **URL:** `{{base_url}}/positions/{{position_id}}`
+- **Headers:**
+  - `Authorization: Bearer {{auth_token}}`
+
 #### 2. **Get Company By ID (Buscar Empresa por ID)** 🔒
 - **Método:** `GET`
 - **URL:** `{{base_url}}/companies/{{company_id}}`
@@ -166,6 +216,7 @@ A coleção usa as seguintes variáveis:
 | `user_name` | Nome do usuário autenticado | - |
 | `user_email` | Email do usuário autenticado | - |
 | `company_id` | ID da empresa para busca por ID | - |
+| `position_id` | ID do cargo para busca/edição/exclusão | - |
 
 ---
 
@@ -198,6 +249,17 @@ A coleção usa as seguintes variáveis:
 ### 6️⃣ Teste de Empresas: Busca por ID
 1. Execute **"Get Company By ID (Protected)"**
 2. Verifique se retornou apenas a empresa do ID informado
+
+### 7️⃣ Teste de Cargos: Listagem
+1. Execute **"Get All Positions (Protected)"**
+2. Verifique se os cargos retornados pertencem às empresas permitidas para o usuário
+
+### 8️⃣ Teste de Cargos: CRUD
+1. Execute **"Create Position (Protected)"** com `company_id` válido
+2. Copie o `_id` retornado para `position_id`
+3. Execute **"Get Position By ID (Protected)"**
+4. Execute **"Update Position (Protected)"**
+5. Execute **"Delete Position (Protected)"**
 
 ---
 

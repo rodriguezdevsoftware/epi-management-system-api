@@ -1,4 +1,4 @@
-# Documentação da API (Auth e Empresas)
+# Documentação da API (Auth, Empresas e Cargos)
 
 ## Endpoints disponíveis
 
@@ -271,6 +271,125 @@ Authorization: Bearer seu_token_jwt_aqui
 
 ---
 
+### Cargos
+
+### 7. Listar Todos os Cargos Permitidos
+
+**Endpoint:** `GET /api/positions`
+
+**Headers:**
+```
+Authorization: Bearer seu_token_jwt_aqui
+```
+
+**Query Parameter (opcional):**
+- `companyId`: filtra cargos por empresa (também valida permissão)
+
+**Exemplos de URL:**
+```
+GET /api/positions
+GET /api/positions?companyId=65f0d1c2a8e4bc0012dcd001
+```
+
+**Resposta de sucesso (200):**
+```json
+{
+  "success": true,
+  "positions": [
+    {
+      "_id": "65f0f2d4a8e4bc0012dcd101",
+      "code": "CARG-001",
+      "description": "Tecnico de Seguranca",
+      "companyId": {
+        "_id": "65f0d1c2a8e4bc0012dcd001",
+        "tradeName": "Empresa Exemplo Ltda",
+        "internalCode": "EMP-001",
+        "city": "São Paulo",
+        "state": "SP"
+      },
+      "createdAt": "2026-03-09T10:00:00.000Z",
+      "updatedAt": "2026-03-09T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+### 8. Buscar Cargo por ID
+
+**Endpoint:** `GET /api/positions/:id`
+
+**Headers:**
+```
+Authorization: Bearer seu_token_jwt_aqui
+```
+
+### 9. Criar Cargo
+
+**Endpoint:** `POST /api/positions`
+
+**Headers:**
+```
+Authorization: Bearer seu_token_jwt_aqui
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "code": "CARG-003",
+  "description": "Supervisor Operacional",
+  "companyId": "65f0d1c2a8e4bc0012dcd001"
+}
+```
+
+`code` pode ser `null`.
+
+### 10. Editar Cargo
+
+**Endpoint:** `PUT /api/positions/:id`
+
+**Headers:**
+```
+Authorization: Bearer seu_token_jwt_aqui
+Content-Type: application/json
+```
+
+**Body (exemplo):**
+```json
+{
+  "code": null,
+  "description": "Supervisor de Segurança",
+  "companyId": "65f0d1c2a8e4bc0012dcd001"
+}
+```
+
+### 11. Excluir Cargo
+
+**Endpoint:** `DELETE /api/positions/:id`
+
+**Headers:**
+```
+Authorization: Bearer seu_token_jwt_aqui
+```
+
+**Resposta de sucesso (200):**
+```json
+{
+  "success": true,
+  "message": "Cargo excluído com sucesso"
+}
+```
+
+**Resposta de erro (403):**
+```json
+{
+  "success": false,
+  "error": "Usuário não possui permissão para esta empresa"
+}
+```
+
+---
+
 ## Como usar
 
 ### 1. Fazer login com usuário default
@@ -317,6 +436,26 @@ curl -X GET http://localhost:3000/api/companies/65f0d1c2a8e4bc0012dcd001 \
   -H "Authorization: Bearer seu_token_aqui"
 ```
 
+### 6. Listar cargos permitidos
+
+```bash
+curl -X GET http://localhost:3000/api/positions \
+  -H "Authorization: Bearer seu_token_aqui"
+```
+
+### 7. Criar cargo
+
+```bash
+curl -X POST http://localhost:3000/api/positions \
+  -H "Authorization: Bearer seu_token_aqui" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "CARG-010",
+    "description": "Analista de EPI",
+    "companyId": "65f0d1c2a8e4bc0012dcd001"
+  }'
+```
+
 ---
 
 ## Usuário Default
@@ -354,20 +493,25 @@ src/
 │   ├── user.js                 # Modelo de usuário com Mongoose
 │   ├── loginHistory.js         # Modelo de histórico de login
 │   ├── company.js              # Modelo de empresa
-│   └── permission.js           # Modelo de permissão (usuário-empresa)
+│   ├── permission.js           # Modelo de permissão (usuário-empresa)
+│   └── position.js             # Modelo de cargo
 ├── services/
 │   ├── authService.js          # Lógica de autenticação
-│   └── companyService.js       # Lógica de empresas com controle de permissões
+│   ├── companyService.js       # Lógica de empresas com controle de permissões
+│   ├── permissionService.js    # Validação de permissão usuário-empresa
+│   └── positionService.js      # Lógica de cargos com controle de permissões
 ├── controllers/
 │   ├── authController.js       # Controllers de autenticação
-│   └── companyController.js    # Controllers de empresas
+│   ├── companyController.js    # Controllers de empresas
+│   └── positionController.js   # Controllers de cargos
 ├── middlewares/
 │   └── authMiddleware.js       # Middleware de verificação JWT
 ├── routes/
 │   ├── authRoutes.js           # Rotas de autenticação
-│   └── companyRoutes.js        # Rotas de empresas
+│   ├── companyRoutes.js        # Rotas de empresas
+│   └── positionRoutes.js       # Rotas de cargos
 ├── scripts/
-│   └── seedDatabase.js         # Script para criar usuário, empresas e permissões
+│   └── seedDatabase.js         # Script para criar usuário, empresas, permissões e cargos
 ├── config/
 │   └── database.js             # Configuração do MongoDB
 ├── app.js                      # Configuração do Express

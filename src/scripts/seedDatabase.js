@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const User = require('../models/user')
 const Company = require('../models/company')
 const Permission = require('../models/permission')
+const Position = require('../models/position')
 const connectDatabase = require('../config/database')
 
 const seedDatabase = async () => {
@@ -100,6 +101,48 @@ const seedDatabase = async () => {
         console.log(`✓ Permissão criada: ${user.name} -> ${company.tradeName}`)
       } else {
         console.log(`✓ Permissão já existe: ${user.name} -> ${company.tradeName}`)
+      }
+    }
+
+    // Cargos padrão por empresa
+    const companyByCode = companies.reduce((acc, company) => {
+      acc[company.internalCode] = company
+      return acc
+    }, {})
+
+    const defaultPositions = [
+      {
+        code: 'CARG-001',
+        description: 'Tecnico de Seguranca',
+        companyId: companyByCode['EMP-001']?._id
+      },
+      {
+        code: 'CARG-002',
+        description: 'Almoxarife',
+        companyId: companyByCode['EMP-001']?._id
+      },
+      {
+        code: null,
+        description: 'Supervisor Operacional',
+        companyId: companyByCode['EMP-002']?._id
+      }
+    ]
+
+    for (const positionData of defaultPositions) {
+      if (!positionData.companyId) {
+        continue
+      }
+
+      const positionExists = await Position.findOne({
+        description: positionData.description,
+        companyId: positionData.companyId
+      })
+
+      if (!positionExists) {
+        await Position.create(positionData)
+        console.log(`✓ Cargo criado: ${positionData.description}`)
+      } else {
+        console.log(`✓ Cargo já existe: ${positionData.description}`)
       }
     }
 
