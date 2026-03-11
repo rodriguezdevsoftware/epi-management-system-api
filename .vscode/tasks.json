@@ -1,0 +1,91 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start: MongoDB",
+      "type": "shell",
+      "command": "brew services start mongodb-community",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start: API (nodemon)",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Git: Create Feature Branch (+ commit + push)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["${workspaceFolder}/.vscode/scripts/create-feature.sh"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Git: Create Bugfix Branch (+ commit + push)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["${workspaceFolder}/.vscode/scripts/create-bugfix.sh"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Git: Create Refactor Branch (+ commit + push)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["${workspaceFolder}/.vscode/scripts/create-refactor.sh"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Git: Create Documentation Branch (+ commit + push)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["${workspaceFolder}/.vscode/scripts/create-docs.sh"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Git: Sync Main Branch (checkout + pull)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["${workspaceFolder}/.vscode/scripts/sync-main.sh"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
